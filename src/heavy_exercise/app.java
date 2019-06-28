@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -22,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JInternalFrame;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.awt.event.ActionEvent;
 
 public class app {
@@ -33,7 +35,7 @@ public class app {
 	 */
 	protected int number;
 	protected int[][] a;
-	protected String txtOrigin, txtResult;
+	protected String txtOrigin, txtResult, txt;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -58,6 +60,9 @@ public class app {
 	 * Initialize the contents of the frame.
 	 */
 	private boolean isNaN(String numberString) {
+		
+		if (numberString.length() == 0)
+			return true;
 		int i = 0;
 		while (i < numberString.length()) {
 			if ((numberString.charAt(i) < 48) ||(numberString.charAt(i) > 57))
@@ -85,6 +90,7 @@ public class app {
 			if (number % i == 0) {
 				divisor += i + number/i;
 			}
+			i++;
 		}
 		return (divisor == number) ? true:false;
 	}
@@ -184,9 +190,10 @@ public class app {
 		JButton btn_Generate = new JButton("Generate Random Matrix");
 		btn_Generate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String txt = txtN.getText();
+				txt = txtN.getText();
 				if (isNaN(txt)) {
-					
+					JOptionPane.showMessageDialog(frame, "Error! You have to enter a postive number!");
+					txtN.setText("");
 				}
 				else {
 					number = Integer.parseInt(txt);
@@ -215,43 +222,211 @@ public class app {
 		btn_handing.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String action = btn_group.getSelection().getActionCommand();
+				txtN.setText(txt);
 				if (action == "1") {
+					txtResult = "";
 				for (int i = 0; i < number; i++)
 					for (int j = 0; j < number; j++)
 						if (checkPrime(a[i][j]))
 							txtResult += Integer.toString(a[i][j]) + "\t";
 				}
 				else if (action == "2") {
+					txtResult = "";
+					boolean flag = false;
+					String txt = "";
+					do {
+						txt = JOptionPane.showInputDialog("Enter row that you want to Drop!");
+						if (txt == null)
+							flag = false;
+						else
+							flag = !isNaN(txt);
+						
+						if (!flag)
+							JOptionPane.showMessageDialog(frame, "Error! You have to enter a positive number!");
+					} 
+					while (!flag);
+					
+					int col = Integer.parseInt(txt);
+					int b[][] = a;
+					txtResult = "";
+					for (int i = 0; i < number; i++) {
+						for (int j = 0; j < number; j++) {
+							if (i < col)
+								b[i][j] = a[i][j];
+							else 
+								b[i][j] = a[i+1][j];
+							if (i < number - 1)
+								txtResult += Integer.toString(b[i][j]) + "\t";
+						}
+						txtResult += "\n\n";
+					}
+					
 					
 				}
 				else if (action == "3") {
-					
+					txtResult = "";
+					long sum = 0;
+					for (int i = 0; i < number; i++)
+						for (int j = 0; j < number; j++)
+							if (a[i][j] % 2 == 0)
+								sum += a[i][j];
+					txtResult += Long.toString(sum);	
 				}
 				else if (action == "4") {
-					
+					txtResult = "";
+					long sum = 0;
+					for (int i = 0; i < number; i++)
+						sum += a[i][i];
+					txtResult += Long.toString(sum);
 				}
 				else if (action == "5") {
+					txtResult = "";
+					int negative = 0, positive = 0;
+					for (int i = 0; i < number; i++)
+						for (int j = 0; j < number; j++)
+							if (a[i][j] < 0)
+								negative++;
+							else
+								positive ++;
+					txtResult += " Negative: " + Integer.toString(negative) + "\n\n" + " Positive: " + Integer.toString(positive);
 					
 				}
 				else if (action == "6") {
-					
+					txtResult = "";
+					long min = 1000000000, max = -1000000000, sum = 0;
+					int posMin = -1, posMax = -1;
+					for (int i = 0; i < number; i++) {
+						sum = 0;
+						for (int j = 0; j < number; j++)
+							sum += a[i][j];
+						
+						if (sum > max) {
+							max = sum;
+							posMax = i;
+						}
+						if (sum < min) {
+							min = sum;
+							posMin = i;
+						}
+					}
+					int [][]b = new int[20][20];
+ 					for (int i = 0; i < number; i++) {
+						for (int j = 0; j < number; j++) {
+							if (i == posMin) {
+								b[i][j] = a[posMax][j];
+							}	
+							else if (i == posMax) {
+								b[i][j] = a[posMin][j];
+							}	
+							else {
+								b[i][j] = a[i][j];
+							}
+						}	
+					}
+ 					for (int i = 0; i < number; i++) {
+						for (int j = 0; j < number; j++) {
+							txtResult += Integer.toString(b[i][j]) + "\t";
+						}
+						txtResult += "\n\n"; 	
+					}
+ 					
+ 					
 				}
 				else if (action == "7") {
+					txtResult = "";
+					int min = 100000000;
+					for (int i = 0; i < number; i++)
+						for (int j = 0; j < number; j++) 
+							if (a[i][j] < min) 
+								min = a[i][j];
+					txtResult = Integer.toString(min);
 					
 				}
 				else if (action == "8") {
+					txtResult = "";
+					int max = -1;
+					for (int i = 0; i < number; i++)
+						for (int j = 0; j < number; j++) 
+							if (checkPerfect(a[i][j]) && (a[i][j] > max))
+								max = a[i][j];
+					if (max > 0)
+						txtResult += Integer.toString(max);
+					else
+						txtResult += "Nothing!";
 					
 				}
 				else if (action == "9") {
-					
+					txtResult = "";
+					long max = -100000000;
+					int pos = -1;
+					for (int i = 0; i < number; i++) {
+						long sum = 0;
+						for (int j = 0; j < number; j++) 
+							sum += a[i][j];
+						if (sum > max) {
+							max = sum;
+							pos = i;
+						}
+					}
+					txtResult = "Max row: " + pos + ". Total: " + Long.toString(max) + "\n\n";
+					for (int i = 0; i < number; i++ )
+						txtResult += Integer.toString(a[pos][i]) + "\t";
 				}
 				else if (action == "10") {
+					txtResult = "";
+					int avg = 0;
+					for (int i = 0; i < number; i++) {
+						int min = 100000000;
+						for (int j = 0; j < number; j++)
+							if (a[j][i] < min)
+								min = a[j][i];
+						avg += min;
+					}
+					txtResult += Double.toString((double) avg/number);
 					
 				}
 				else if (action == "11") {
-					
+					txtResult = "";
+					for (int i = 0; i < number; i++) {
+						boolean flag = false;
+						for (int j = 0; j < number; j++)
+							if (a[i][j] < 0) {
+								flag = true;
+								continue;
+							}
+						
+						if (flag) {
+							for (int j = 0; j < number; j++) {
+								txtResult += Integer.toString(a[i][j]) + "\t";
+							}
+							txtResult += "\n\n";
+						}	
+					}	
 				}
 				else {
+					txtResult = "";
+					int k = 0;
+					int[] b = new int [400];
+					for (int i = 0; i < number; i++)
+						for (int j = 0; j < number; j++) {
+							b[k++] = a[i][j];
+						}
+					int len = k;
+					
+					for (int i = 0; i < len; i++) 
+						for (int j = len - 1; j > i; j--) {
+							if (b[j] < b[j-1]) {
+								int temp = b[j];
+								b[j] = b[j-1];
+								b[j-1] = temp;
+							}
+						}
+					for (int i = 0; i < len; i++) {
+						txtResult += Integer.toString(b[i]) + "\t";
+						if ((i + 1) % number == 0) {
+							txtResult += "\n\n";
+						}
+					}
 					
 				}
 				
